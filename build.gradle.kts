@@ -16,5 +16,5 @@ dependencies {
     compileOnly(libs.jetbrains.annotations)
 
     modImplementation("org.wallentines:databridge:0.6.0")
-    modImplementation("org.wallentines:pseudonym-minecraft:0.2.0-SNAPSHOT")
+    modImplementation("org.wallentines:pseudonym-minecraft:0.2.0")
 }
