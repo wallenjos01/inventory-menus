@@ -5,9 +5,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.wallentines.invmenu.impl.InventoryMenuImpl;
+import org.wallentines.pseudonym.Message;
 import org.wallentines.pseudonym.PipelineContext;
-import org.wallentines.pseudonym.UnresolvedMessage;
-import org.wallentines.pseudonym.mc.api.ServerPlaceholders;
 
 public interface InventoryMenu {
 
@@ -95,7 +94,7 @@ public interface InventoryMenu {
      * @param size The minimum number of items the menu can hold. Cannot be negative or greater than 54
      * @return A new InventoryGui
      */
-    static InventoryMenu create(ComponentSupplier title, int size) {
+    static InventoryMenu create(Message<Component> title, int size) {
         return create(title, size, PipelineContext.EMPTY);
     }
 
@@ -106,7 +105,7 @@ public interface InventoryMenu {
      * @param context Context to be applied each time an item or the title is resolved.
      * @return A new InventoryGui
      */
-    static InventoryMenu create(ComponentSupplier title, int size, PipelineContext context) {
+    static InventoryMenu create(Message<Component> title, int size, PipelineContext context) {
         return InventoryMenuImpl.create(title, size, context);
     }
 
@@ -137,21 +136,6 @@ public interface InventoryMenu {
      */
     interface ItemSupplier {
         ItemStack get(PipelineContext player);
-    }
-
-    /**
-     * Creates or retrieves a text component based on the given context
-     */
-    interface ComponentSupplier {
-        Component get(PipelineContext ctx);
-
-        static ComponentSupplier completed(Component text) {
-            return (ctx) -> text;
-        }
-
-        static ComponentSupplier unresolved(UnresolvedMessage<String> text) {
-            return (ctx) -> ServerPlaceholders.COMPONENT_RESOLVER.accept(text, ctx);
-        }
     }
 
 }

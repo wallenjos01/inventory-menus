@@ -19,9 +19,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.wallentines.invmenu.api.InventoryMenu;
 import org.wallentines.invmenu.api.PagedInventoryMenu;
+import org.wallentines.pseudonym.Message;
 import org.wallentines.pseudonym.MessagePipeline;
+import org.wallentines.pseudonym.PartialMessage;
 import org.wallentines.pseudonym.PlaceholderManager;
-import org.wallentines.pseudonym.UnresolvedMessage;
+import org.wallentines.pseudonym.mc.api.ServerPlaceholders;
 
 
 public class Functions {
@@ -35,7 +37,7 @@ public class Functions {
                             Void data) throws CommandSyntaxException {
 
 
-        InventoryMenu menu = InventoryMenu.create(InventoryMenu.ComponentSupplier.completed(Component.literal("Test Menu").withStyle(ChatFormatting.RED)), 9);
+        InventoryMenu menu = InventoryMenu.create(Message.complete(Component.literal("Test Menu").withStyle(ChatFormatting.RED)), 9);
 
         menu.setItem(0, new ItemStack(Items.DIAMOND), (player, type) -> {
             player.sendSystemMessage(Component.literal(type.name()));
@@ -75,9 +77,9 @@ public class Functions {
                 .build()));
 
         PlaceholderManager man = new PlaceholderManager();
-        MessagePipeline<String, UnresolvedMessage<String>> parser = MessagePipeline.parser(man);
+        MessagePipeline<String, PartialMessage<String>> parser = MessagePipeline.parser(man);
 
-        PagedInventoryMenu menu = PagedInventoryMenu.create(InventoryMenu.ComponentSupplier.unresolved(parser.accept("Paged - <gui_page>/<gui_pages>")), PagedInventoryMenu.SizeProvider.dynamic(5), 256);
+        PagedInventoryMenu menu = PagedInventoryMenu.create(Message.forPipeline(parser.accept("Paged - <gui_page>/<gui_pages>"), ServerPlaceholders.COMPONENT_RESOLVER), PagedInventoryMenu.SizeProvider.dynamic(5), 256);
         menu.addBottomReservedRow(PagedInventoryMenu.RowProvider.pageControls(next, prev));
 
         Item[] cs = new Item[]{ Items.RED_WOOL, Items.YELLOW_WOOL, Items.LIME_WOOL, Items.BLUE_WOOL };

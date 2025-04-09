@@ -1,8 +1,10 @@
 package org.wallentines.invmenu.api;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.wallentines.invmenu.impl.PagedInventoryMenuImpl;
+import org.wallentines.pseudonym.Message;
 import org.wallentines.pseudonym.PipelineContext;
 
 public interface PagedInventoryMenu extends InventoryMenu {
@@ -62,7 +64,7 @@ public interface PagedInventoryMenu extends InventoryMenu {
      * @param sizeProvider Some logic to determine the size of each page.
      * @return A new PagedInventoryGui
      */
-    static PagedInventoryMenu create(ComponentSupplier title, PagedInventoryMenu.SizeProvider sizeProvider) {
+    static PagedInventoryMenu create(Message<Component> title, PagedInventoryMenu.SizeProvider sizeProvider) {
         return PagedInventoryMenuImpl.create(title, sizeProvider, 0, PipelineContext.EMPTY);
     }
 
@@ -73,7 +75,7 @@ public interface PagedInventoryMenu extends InventoryMenu {
      * @param size The minimum number of slots to reserve when this GUI is created.
      * @return A new PagedInventoryGui
      */
-    static PagedInventoryMenu create(ComponentSupplier title, PagedInventoryMenu.SizeProvider sizeProvider, int size) {
+    static PagedInventoryMenu create(Message<Component> title, PagedInventoryMenu.SizeProvider sizeProvider, int size) {
         return PagedInventoryMenuImpl.create(title, sizeProvider, size, PipelineContext.EMPTY);
     }
 
@@ -84,7 +86,7 @@ public interface PagedInventoryMenu extends InventoryMenu {
      * @param context Context to be applied each time an item or the title is resolved.
      * @return A new PagedInventoryGui
      */
-    static PagedInventoryMenu create(ComponentSupplier title, PagedInventoryMenu.SizeProvider sizeProvider, PipelineContext context) {
+    static PagedInventoryMenu create(Message<Component> title, PagedInventoryMenu.SizeProvider sizeProvider, PipelineContext context) {
         return PagedInventoryMenuImpl.create(title, sizeProvider, 0, context);
     }
 
@@ -96,7 +98,7 @@ public interface PagedInventoryMenu extends InventoryMenu {
      * @param context Context to be applied each time an item or the title is resolved.
      * @return A new PagedInventoryGui
      */
-    static PagedInventoryMenu create(ComponentSupplier title, PagedInventoryMenu.SizeProvider sizeProvider, int size, PipelineContext context) {
+    static PagedInventoryMenu create(Message<Component> title, PagedInventoryMenu.SizeProvider sizeProvider, int size, PipelineContext context) {
         return PagedInventoryMenuImpl.create(title, sizeProvider, size, context);
     }
 

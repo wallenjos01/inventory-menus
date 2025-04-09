@@ -1,9 +1,11 @@
 package org.wallentines.invmenu.impl;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.wallentines.invmenu.api.InventoryMenu;
 import org.wallentines.invmenu.api.PagedInventoryMenu;
+import org.wallentines.pseudonym.Message;
 import org.wallentines.pseudonym.PipelineContext;
 import org.wallentines.pseudonym.Placeholder;
 
@@ -13,7 +15,7 @@ import java.util.Optional;
 
 public class PagedInventoryMenuImpl implements PagedInventoryMenu {
 
-    private final InventoryMenuImpl.ComponentSupplier title;
+    private final Message<Component> title;
     private final PagedInventoryMenu.SizeProvider sizeProvider;
     private final PipelineContext context;
     private final List<RowProvider> topReserved = new ArrayList<>();
@@ -22,7 +24,7 @@ public class PagedInventoryMenuImpl implements PagedInventoryMenu {
 
     private int rows;
 
-    protected PagedInventoryMenuImpl(InventoryMenuImpl.ComponentSupplier title, SizeProvider sizeProvider, int rows, PipelineContext context) {
+    protected PagedInventoryMenuImpl(Message<Component> title, SizeProvider sizeProvider, int rows, PipelineContext context) {
         this.title = title;
         this.sizeProvider = sizeProvider;
         this.rows = rows;
@@ -34,7 +36,7 @@ public class PagedInventoryMenuImpl implements PagedInventoryMenu {
         Page p = pages.get(page);
 
         PipelineContext ctx = PipelineContext.builder(player, this)
-                .withContextPlaceholder("gui_page", String.valueOf(page))
+                .withContextPlaceholder("gui_page", String.valueOf(page + 1))
                 .withContextPlaceholder(Placeholder.of("gui_pages", String.class, rCtx -> Optional.of(String.valueOf(pageCount()))))
                 .build();
 
@@ -177,9 +179,7 @@ public class PagedInventoryMenuImpl implements PagedInventoryMenu {
     }
 
     private Page updateAndGetPage(int index) {
-        if(index > size()) {
-            updatePages(index, false);
-        }
+        resize(index);
         return getPage(index);
     }
 
@@ -267,7 +267,7 @@ public class PagedInventoryMenuImpl implements PagedInventoryMenu {
                         setupReserved(p.gui, index);
                     }
 
-                    // If not, reconstruct it.
+                // If not, reconstruct it.
                 } else {
 
                     while(rpItems > 0) {
@@ -314,7 +314,7 @@ public class PagedInventoryMenuImpl implements PagedInventoryMenu {
     }
 
 
-    public static PagedInventoryMenu create(ComponentSupplier title, PagedInventoryMenu.SizeProvider sizeProvider, int size, PipelineContext ctx) {
+    public static PagedInventoryMenu create(Message<Component> title, PagedInventoryMenu.SizeProvider sizeProvider, int size, PipelineContext ctx) {
         return new PagedInventoryMenuImpl(title, sizeProvider, size, ctx);
     }
 
@@ -333,7 +333,7 @@ public class PagedInventoryMenuImpl implements PagedInventoryMenu {
 
     private record Page(InventoryMenuImpl gui, int offset, int index, int size) {
 
-        Page reindex(int index, ComponentSupplier title) {
+        Page reindex(int index, Message<Component> title) {
                 return new Page(gui.copy(title), offset, index, size);
             }
     }

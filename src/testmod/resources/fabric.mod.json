@@ -1,5 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "${id}-testmod",
-  "version": "${version}"
+  "version": "${version}",
+  "depends": {
+    "${id}": "${version}",
+    "databridge": "*"
+  }
 }

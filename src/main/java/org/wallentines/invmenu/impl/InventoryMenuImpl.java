@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.wallentines.invmenu.api.InventoryMenu;
+import org.wallentines.pseudonym.Message;
 import org.wallentines.pseudonym.PipelineContext;
 
 import java.util.ArrayList;
@@ -22,13 +23,13 @@ import java.util.List;
 public class InventoryMenuImpl implements InventoryMenu {
 
 
-    private final ComponentSupplier title;
+    private final Message<Component> title;
     private final int rows;
     private final PipelineContext context;
     protected final Entry[] items;
     private final List<Menu> open = new ArrayList<>();
 
-    protected InventoryMenuImpl(ComponentSupplier title, int rows, PipelineContext context) {
+    protected InventoryMenuImpl(Message<Component> title, int rows, PipelineContext context) {
         this.title = title;
         this.rows = rows;
         this.items = new Entry[rows * 9];
@@ -157,7 +158,7 @@ public class InventoryMenuImpl implements InventoryMenu {
         }
     }
 
-    public InventoryMenuImpl copy(ComponentSupplier title) {
+    public InventoryMenuImpl copy(Message<Component> title) {
 
         InventoryMenuImpl other = new InventoryMenuImpl(title, rows(), context);
         System.arraycopy(items, 0, other.items, 0, size());
@@ -172,7 +173,7 @@ public class InventoryMenuImpl implements InventoryMenu {
         ent.event.execute(serverPlayer, clickType);
     }
 
-    public static InventoryMenuImpl create(ComponentSupplier title, int size, PipelineContext context) {
+    public static InventoryMenuImpl create(Message<Component> title, int size, PipelineContext context) {
 
         int rows = size / 9;
         int partialRows = size % 9;
