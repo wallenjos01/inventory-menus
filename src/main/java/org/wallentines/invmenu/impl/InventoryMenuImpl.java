@@ -13,6 +13,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wallentines.invmenu.api.InventoryMenu;
 import org.wallentines.pseudonym.Message;
 import org.wallentines.pseudonym.PipelineContext;
@@ -22,6 +24,7 @@ import java.util.List;
 
 public class InventoryMenuImpl implements InventoryMenu {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(InventoryMenuImpl.class);
 
     private final Message<Component> title;
     private final int rows;
@@ -63,16 +66,18 @@ public class InventoryMenuImpl implements InventoryMenu {
 
     @Override
     public int firstEmpty() {
-        for(int i = 0 ; i < items.length ; i++) {
-            if(items[i] == null) return i;
+        for (int i = 0; i < items.length; i++) {
+            if (items[i] == null)
+                return i;
         }
         return -1;
     }
 
     @Override
     public int lastItem() {
-        for(int i = items.length ; i > 0 ; i--) {
-            if(items[i - 1] != null) return i;
+        for (int i = items.length; i > 0; i--) {
+            if (items[i - 1] != null)
+                return i;
         }
         return -1;
     }
@@ -80,14 +85,14 @@ public class InventoryMenuImpl implements InventoryMenu {
     @Override
     public void clear() {
         int last = lastItem();
-        for(int i = 0 ; i < last ; i++) {
+        for (int i = 0; i < last; i++) {
             items[i] = null;
         }
     }
 
     @Override
     public void update() {
-        for(Menu menu : open) {
+        for (Menu menu : open) {
             menu.update();
         }
     }
@@ -99,7 +104,7 @@ public class InventoryMenuImpl implements InventoryMenu {
 
     public void open(ServerPlayer player, PipelineContext context) {
 
-        if(player.containerMenu != player.inventoryMenu) {
+        if (player.containerMenu != player.inventoryMenu) {
             player.closeContainer();
         }
 
@@ -112,7 +117,8 @@ public class InventoryMenuImpl implements InventoryMenu {
             @Override
             public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
 
-                if(!(player instanceof ServerPlayer spl)) return null;
+                if (!(player instanceof ServerPlayer spl))
+                    return null;
                 Menu out = new Menu(i, spl);
                 open.add(out);
 
@@ -123,15 +129,16 @@ public class InventoryMenuImpl implements InventoryMenu {
 
     @Override
     public void close(ServerPlayer player) {
-        if(player == null) return;
-        if(player.containerMenu != player.inventoryMenu) {
+        if (player == null)
+            return;
+        if (player.containerMenu != player.inventoryMenu) {
             player.closeContainer();
         }
     }
 
     @Override
     public void closeAll() {
-        for(Menu m : List.copyOf(open)) {
+        for (Menu m : List.copyOf(open)) {
             m.player.closeContainer();
         }
         open.clear();
@@ -139,9 +146,9 @@ public class InventoryMenuImpl implements InventoryMenu {
 
     @Override
     public void moveViewers(InventoryMenu other) {
-        for(Menu menu : open) {
+        for (Menu menu : open) {
             ServerPlayer player = menu.player;
-            if(player != null) {
+            if (player != null) {
                 other.open(player);
             }
         }
@@ -153,7 +160,7 @@ public class InventoryMenuImpl implements InventoryMenu {
     }
 
     public void clear(int start, int end) {
-        for(int i = start ; i < end ; i++) {
+        for (int i = start; i < end; i++) {
             clearItem(i);
         }
     }
@@ -169,15 +176,22 @@ public class InventoryMenuImpl implements InventoryMenu {
 
     private void onClick(int slot, ServerPlayer serverPlayer, ClickType clickType) {
         Entry ent = items[slot];
-        if(ent == null || ent.event == null) return;
-        ent.event.execute(serverPlayer, clickType);
+        if (ent == null || ent.event == null)
+            return;
+
+        try {
+            ent.event.execute(serverPlayer, clickType);
+        } catch (Throwable th) {
+            LOGGER.error("Error while executing click event for slot {}", slot, th);
+        }
     }
 
     public static InventoryMenuImpl create(Message<Component> title, int size, PipelineContext context) {
 
         int rows = size / 9;
         int partialRows = size % 9;
-        if(rows == 0 || partialRows > 0) rows++;
+        if (rows == 0 || partialRows > 0)
+            rows++;
 
         return new InventoryMenuImpl(title, rows, context);
     }
@@ -206,7 +220,6 @@ public class InventoryMenuImpl implements InventoryMenu {
         }
     }
 
-
     private static ClickType getActionType(int action, net.minecraft.world.inventory.ClickType type) {
         return switch (type) {
             case PICKUP -> action == 0 ? ClickType.LEFT : ClickType.RIGHT;
@@ -218,7 +231,6 @@ public class InventoryMenuImpl implements InventoryMenu {
             default -> null;
         };
     }
-
 
     private class Menu extends AbstractContainerMenu {
 
@@ -234,8 +246,8 @@ public class InventoryMenuImpl implements InventoryMenu {
             Container container = new SimpleContainer(InventoryMenuImpl.this.size());
             int rows = InventoryMenuImpl.this.rows();
 
-            for(int row = 0; row < rows; row++) {
-                for(int col = 0; col < 9; col++) {
+            for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < 9; col++) {
                     addSlot(new Slot(container, col + row * 9, 8 + col * 18, 18 + row * 18));
                 }
             }
@@ -246,18 +258,19 @@ public class InventoryMenuImpl implements InventoryMenu {
 
         public void update() {
 
-            if(player.isRemoved()) {
+            if (player.isRemoved()) {
                 return;
             }
 
             int stateId = incrementStateId();
 
-            for(int i = 0; i < InventoryMenuImpl.this.size() ; i++) {
+            for (int i = 0; i < InventoryMenuImpl.this.size(); i++) {
                 Entry ent = InventoryMenuImpl.this.items[i];
-                if(ent == null) continue;
+                if (ent == null)
+                    continue;
 
                 ItemStack is = ent.getItem(ctx);
-                if(is != null) {
+                if (is != null) {
                     setItem(i, stateId, is);
                 }
             }
@@ -276,13 +289,14 @@ public class InventoryMenuImpl implements InventoryMenu {
         @Override
         public void clicked(int slot, int button, net.minecraft.world.inventory.ClickType clickType, Player player) {
 
-            if(player.level().isClientSide || slot < 0 || slot >= items.length) return;
+            if (player.level().isClientSide || slot < 0 || slot >= items.length)
+                return;
             InventoryMenuImpl.this.onClick(slot, (ServerPlayer) player, getActionType(button, clickType));
         }
 
         @Override
         public void removed(Player player) {
-            if(player == this.player) {
+            if (player == this.player) {
                 open.remove(this);
             }
         }
