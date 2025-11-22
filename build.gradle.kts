@@ -15,6 +15,8 @@ dependencies {
 
     compileOnly(libs.jetbrains.annotations)
 
-    modImplementation("org.wallentines:databridge:0.8.2")
-    modImplementation("org.wallentines:pseudonym-minecraft:0.4.1")
+    modImplementation("me.lucko:fabric-permissions-api:0.5.0")
+
+    modImplementation("org.wallentines:databridge:0.9.0")
+    modImplementation("org.wallentines:pseudonym-minecraft:0.4.2")
 }

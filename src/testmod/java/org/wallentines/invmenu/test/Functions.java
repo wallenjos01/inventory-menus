@@ -48,7 +48,7 @@ public class Functions {
         menu.setItem(4, ctx -> {
             ServerPlayer player = ctx.getFirst(ServerPlayer.class).orElseThrow();
             return new ItemStack(Holder.direct(Items.PLAYER_HEAD), 1, DataComponentPatch.builder()
-                    .set(DataComponents.PROFILE, new ResolvableProfile(player.getGameProfile()))
+                    .set(DataComponents.PROFILE, ResolvableProfile.createResolved(player.getGameProfile()))
                     .build());
         }, null);
 

@@ -289,7 +289,7 @@ public class InventoryMenuImpl implements InventoryMenu {
         @Override
         public void clicked(int slot, int button, net.minecraft.world.inventory.ClickType clickType, Player player) {
 
-            if (player.level().isClientSide || slot < 0 || slot >= items.length)
+            if (player.level().isClientSide() || slot < 0 || slot >= items.length)
                 return;
             InventoryMenuImpl.this.onClick(slot, (ServerPlayer) player, getActionType(button, clickType));
         }
