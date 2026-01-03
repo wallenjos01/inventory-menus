@@ -11,7 +11,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +30,7 @@ public class Functions {
 
     public static void test(CommandSourceStack css,
                             CompoundTag tag,
-                            ResourceLocation id,
+                            Identifier id,
                             CommandDispatcher<CommandSourceStack> dispatcher,
                             ExecutionContext<CommandSourceStack> exeContext,
                             Frame frame,
@@ -63,7 +63,7 @@ public class Functions {
 
     public static void testPaged(CommandSourceStack css,
                             CompoundTag tag,
-                            ResourceLocation id,
+                            Identifier id,
                             CommandDispatcher<CommandSourceStack> dispatcher,
                             ExecutionContext<CommandSourceStack> exeContext,
                             Frame frame,
